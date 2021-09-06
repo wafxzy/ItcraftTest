@@ -23,6 +23,8 @@ namespace ItcraftTest
 {
     public class Startup
     {
+        private readonly string _loginOrigin = "_localorigin";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -53,9 +55,14 @@ namespace ItcraftTest
                     RequireExpirationTime = true,
                     ValidIssuer = issuer,
                     ValidAudience = audience
-
-                };
-
+                   };
+                });
+            services.AddCors(opt => {
+                opt.AddPolicy(_loginOrigin, builder => {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
+                    });
             });
 
             services.AddControllers();
@@ -78,7 +85,7 @@ namespace ItcraftTest
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-           
+            app.UseCors(_loginOrigin);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
